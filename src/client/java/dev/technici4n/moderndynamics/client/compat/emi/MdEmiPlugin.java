@@ -18,6 +18,7 @@
  */
 package dev.technici4n.moderndynamics.client.compat.emi;
 
+import dev.emi.emi.api.EmiEntrypoint;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.FabricEmiStack;
@@ -30,6 +31,7 @@ import dev.technici4n.moderndynamics.gui.menu.FluidConfigSlot;
 import dev.technici4n.moderndynamics.init.MdItems;
 import java.util.List;
 
+@EmiEntrypoint
 public class MdEmiPlugin implements EmiPlugin {
     @Override
     public void register(EmiRegistry registry) {
