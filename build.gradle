@@ -52,6 +52,12 @@ repositories {
             includeGroup "mezz.jei"
         }
     }
+    maven {
+        url "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
 }
 
 dependencies {
@@ -100,9 +106,7 @@ dependencies {
         throw new GradleException("Invalid runtime_itemlist_mod value: " + project.runtime_itemlist_mod)
     }
 
-    modRuntimeOnly("mcp.mobius.waila:wthit:fabric-${project.wthit_version}") {
-        exclude group: "net.fabricmc.fabric-api"
-    }
+    modImplementation("curse.maven:jade-324717:${project.jade_file_id}")
 }
 
 processResources {

@@ -40,6 +40,7 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -77,6 +78,16 @@ public abstract class PipeBlockEntity extends MdBlockEntity {
         return hosts;
     }
 
+    @Nullable
+    public final <T> T findHost(Class<T> hostClass) {
+        for (var host : getHosts()) {
+            if (hostClass.isInstance(host)) {
+                return hostClass.cast(host);
+            }
+        }
+        return null;
+    }
+
     private boolean hasAttachment(Direction side) {
         if (isClientSide()) {
             return clientModelData != null && clientModelData.attachments()[side.get3DDataValue()] != null;
@@ -95,6 +106,20 @@ public abstract class PipeBlockEntity extends MdBlockEntity {
             }
         }
         return null;
+    }
+
+    @Nullable
+    public Item getAttachmentItem(Direction side) {
+        if (isClientSide()) {
+            if (clientModelData != null) {
+                var attachment = clientModelData.attachments()[side.get3DDataValue()];
+                return attachment == null ? null : attachment.item();
+            }
+            return null;
+        } else {
+            var attachment = getAttachment(side);
+            return attachment == null ? null : attachment.getItem();
+        }
     }
 
     @Override
@@ -320,7 +345,7 @@ public abstract class PipeBlockEntity extends MdBlockEntity {
 
     public InteractionResult onUse(Player player, InteractionHand hand, BlockHitResult hitResult) {
         var stack = player.getItemInHand(hand);
-        Vec3 posInBlock = hitResult.getLocation().subtract(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ());
+        Vec3 posInBlock = getPosInBlock(hitResult);
 
         if (WrenchHelper.isWrench(stack)) {
             // If the core was hit, add back the pipe on the target side
@@ -427,6 +452,10 @@ public abstract class PipeBlockEntity extends MdBlockEntity {
         }
 
         return InteractionResult.PASS;
+    }
+
+    public Vec3 getPosInBlock(HitResult hitResult) {
+        return hitResult.getLocation().subtract(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ());
     }
 
     @Nullable

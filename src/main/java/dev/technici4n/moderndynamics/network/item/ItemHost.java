@@ -507,7 +507,7 @@ public class ItemHost extends NodeHost {
             var newItem = new ClientTravelingItem(
                     compound.getInt("id"),
                     ItemVariant.fromNbt(compound.getCompound("v")),
-                    compound.getLong("a"),
+                    compound.getInt("a"),
                     compound.getDouble("td"),
                     compound.getDouble("d"),
                     Direction.from3DDataValue(compound.getByte("in")),
