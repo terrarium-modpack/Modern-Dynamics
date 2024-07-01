@@ -77,7 +77,7 @@ public class NetworkManager<H extends NodeHost, C extends NetworkCache<H, C>> {
         this.cacheFactory = cacheFactory;
     }
 
-    public void addNode(ServerLevel world, BlockPos pos, H host) {
+    public synchronized void addNode(ServerLevel world, BlockPos pos, H host) {
         if (iteratingOverNetworks) {
             throw new ConcurrentModificationException(
                     "Node at position " + pos + " in world " + world + " can't be added: networks are being iterated over.");
@@ -119,7 +119,7 @@ public class NetworkManager<H extends NodeHost, C extends NetworkCache<H, C>> {
         newNode.updateHostConnections();
     }
 
-    public void removeNode(ServerLevel world, BlockPos pos, H host) {
+    public synchronized void removeNode(ServerLevel world, BlockPos pos, H host) {
         if (iteratingOverNetworks) {
             throw new ConcurrentModificationException(
                     "Node at position " + pos + " in world " + world + " can't be removed: networks are being iterated over.");
@@ -153,20 +153,20 @@ public class NetworkManager<H extends NodeHost, C extends NetworkCache<H, C>> {
         }
     }
 
-    public void refreshNode(ServerLevel world, BlockPos pos, H host) {
+    public synchronized void refreshNode(ServerLevel world, BlockPos pos, H host) {
         removeNode(world, pos, host);
         addNode(world, pos, host);
     }
 
     @Nullable
-    public NetworkNode<H, C> findNode(ServerLevel world, BlockPos pos) {
+    public synchronized NetworkNode<H, C> findNode(ServerLevel world, BlockPos pos) {
         updateNetworks();
 
         return nodes.computeIfAbsent(world, w -> new Long2ObjectOpenHashMap<>()).get(pos.asLong());
     }
 
     private void updateNetworks() {
-        if (pendingUpdates.size() == 0)
+        if (pendingUpdates.isEmpty())
             return;
 
         List<NetworkNode<H, C>> pendingUpdatesCopy = new ArrayList<>(pendingUpdates);
