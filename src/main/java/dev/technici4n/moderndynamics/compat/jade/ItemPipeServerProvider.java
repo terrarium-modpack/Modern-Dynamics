@@ -53,7 +53,6 @@ public enum ItemPipeServerProvider implements IServerExtensionProvider<PipeBlock
         return MdId.of("item_pipe");
     }
 
-
     @Override
     public @Nullable List<ViewGroup<ItemStack>> getGroups(ServerPlayer player, ServerLevel level, PipeBlockEntity pipe, boolean details) {
         // Send attachment data here
@@ -134,7 +133,7 @@ public enum ItemPipeServerProvider implements IServerExtensionProvider<PipeBlock
             if (host instanceof ItemHost itemHost) {
                 Map<ItemVariant, Long> items = new HashMap<>();
                 for (var item : itemHost.getClientTravelingItems()) {
-                    items.merge(item.variant(), (long)item.amount(), Long::sum);
+                    items.merge(item.variant(), (long) item.amount(), Long::sum);
                 }
 
                 var clientGroup = new ClientViewGroup<ItemView>(new ArrayList<>());

@@ -1,9 +1,6 @@
 plugins {
     id 'fabric-loom' version '1.7-SNAPSHOT'
-    id 'maven-publish'
-    id 'com.diffplug.spotless' version '5.14.0'
-    id 'com.matthewprenger.cursegradle' version '1.4.0'
-    id "com.modrinth.minotaur" version "2.+"
+    id 'com.diffplug.spotless' version '6.25.0'
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -181,23 +178,6 @@ jar {
     }
 }
 
-// configure the maven publication
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
-        // Notice: This block does NOT have the same function as the block in the top level.
-        // The repositories here will be used for publishing your artifact, not for
-        // retrieving dependencies.
-    }
-}
-
 spotless {
     format 'misc', {
         target '*.gradle', '*.md', '.gitignore'
@@ -253,62 +233,5 @@ final class JsonOrderStep {
         private static final long serialVersionUID = 1L;
 
         private final int formatVersion = 1;
-    }
-}
-
-def releaseChannel = "release"
-def changelog = "Please visit our github repository for a changelog: https://github.com/Technici4n/Modern-Dynamics/releases."
-if (version.toLowerCase().contains("alpha")) {
-    releaseChannel = "alpha"
-    changelog = "THIS IS AN ALPHA RELEASE, MAKE A BACKUP BEFORE INSTALLING AND FREQUENTLY WHILE PLAYING, AND PLEASE REPORT ANY ISSUE YOU MAY FIND ON OUR ISSUE TRACKER.\n\n" + changelog
-} else if (version.toLowerCase().contains("beta")) {
-    releaseChannel = "beta"
-    changelog = "This is a beta release. It is expected to be mostly stable, but in any case please report any issue you may find.\n\n" + changelog
-}
-
-// Publishing
-if (System.getenv("CURSEFORGE_API_KEY") && !version.endsWith("-SNAPSHOT")) {
-    curseforge {
-        apiKey = System.getenv().get("CURSEFORGE_API_KEY")
-        project {
-            id = project.curseforge_project
-            releaseType = releaseChannel
-            changelogType = "markdown"
-            delegate.changelog = changelog
-
-            addGameVersion "1.20.1"
-            addGameVersion "Fabric"
-            addGameVersion "Java 17"
-
-            relations {
-                requiredDependency "fabric-api"
-            }
-            mainArtifact(remapJar.archiveFile) {
-                displayName = "Modern Dynamics v${version}"
-            }
-        }
-        options {
-            forgeGradleIntegration = false
-        }
-        afterEvaluate {
-            tasks.getByName("curseforge${project.curseforge_project}").dependsOn remapJar
-        }
-    }
-}
-
-if (System.getenv("MODRINTH_API_KEY") && !version.endsWith("-SNAPSHOT")) {
-    modrinth {
-        token = System.getenv("MODRINTH_API_KEY")
-        projectId = project.modrinth_project
-        versionNumber = version
-        versionName = "Modern Dynamics v${version}"
-        delegate.changelog = changelog
-        versionType = releaseChannel.toUpperCase()
-        uploadFile = remapJar.archiveFile
-        gameVersions = ["1.20.1"]
-        loaders = ["fabric"]
-        dependencies {
-            required.project "fabric-api"
-        }
     }
 }

@@ -80,7 +80,7 @@ public class MdReiPlugin implements REIClientPlugin {
     public void registerScreens(ScreenRegistry registry) {
         // Ensures that users can press R, U, etc... on fluid config slots.
         registry.registerFocusedStack((screen, mouse) -> {
-            if (screen instanceof AttachedIoScreen<?>ioScreen) {
+            if (screen instanceof AttachedIoScreen<?> ioScreen) {
                 if (ioScreen.getHoveredSlot() instanceof FluidConfigSlot fluidConfig) {
                     var variant = fluidConfig.getFilter();
                     if (!variant.isBlank()) {
