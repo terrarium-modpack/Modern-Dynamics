@@ -148,7 +148,11 @@ public abstract class NodeHost {
     @Nullable
     protected final <H extends NodeHost, C extends NetworkCache<H, C>> NetworkNode<H, C> findNode() {
         // TODO: not the best unchecked cast...
-        return getManager().findNode((ServerLevel) pipe.getLevel(), pipe.getBlockPos());
+        if (pipe.getLevel() instanceof ServerLevel) {
+            return getManager().findNode((ServerLevel) pipe.getLevel(), pipe.getBlockPos());
+        } else {
+            return null;
+        }
     }
 
     public final void separateNetwork() {
